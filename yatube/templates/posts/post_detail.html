@@ -1,0 +1,39 @@
+<html lang="ru">
+{% extends 'base.html' %}
+{% block title %}
+{{ post.text|truncatechars:30 }}
+{% endblock %}
+{% block content %}
+    <div class="container py-5">
+         <div class="row">
+            <aside class="col-12 col-md-3">
+                <ul>
+                    <li>Дата публикации: {{ post.pub_date|date:'d E Y' }}</li>
+                    {% if post.group %}
+                    <li>Группа: {{ post.group.title }}</li>
+                    <li>
+                        <a href='{% url 'posts:group_list' post.group.slug %}' class='button'>
+                        Все записи группы
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>Автор: {{ post.author.get_full_name }}</li>
+                    <li>Всего постов автора:  <span >{{ post.author.post.count }}</span></li>
+                    <li>
+                        <a href="{% url 'posts:profile' post.author %}">
+                        все посты пользователя
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+        <article class="col-12 col-md-9">
+            <p>{{ post.text|linebreaksbr }}</p>
+            {% if request.user == post.author %}
+            <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id%}">
+                редактировать запись
+            </a> 
+            {% endif %}         
+        </article>
+    </section>
+{% endblock %}
+</html> 

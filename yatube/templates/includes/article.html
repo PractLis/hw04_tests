@@ -1,0 +1,27 @@
+{% load static %}
+<article>
+    <ul>
+        <li>
+            Автор: {{ post.author.get_full_name }} 
+            <a href="{% url 'posts:profile' post.author %}">
+                все посты пользователя
+            </a>
+        </li>
+        <li>
+    Дата публикации: {{ post.pub_date|date:'d E Y' }}
+        </li>
+        <li>
+            <a href="{% url 'posts:post_detail' post.id %}">
+                подробная информация 
+            </a>
+        </li>
+    </ul>
+    <p>{{ post.text|linebreaksbr }}</p>
+    {% if post.group and not group %}
+        <ul class="actions">
+            <li><a href='{% url 'posts:group_list' post.group.slug %}' class='button'>
+                Все записи группы {{ post.group.title }}
+            </a></li>
+        </ul>
+    {% endif %}
+</article>

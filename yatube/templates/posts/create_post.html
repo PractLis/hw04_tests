@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}
+{% if is_edit %}
+Редактировать
+{% else %}
+Новый пост
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 p-5">
+      <div class="card">
+        <div class="card-header">
+          {% if is_edit %}
+          Редактировать
+          {% else %}
+          Новый пост
+          {% endif %}</div>
+        <div class="card-body">  
+          {% if form.errors %}
+          {% for field in form %}
+            {% for error in field.errors %}            
+              <div class="alert alert-danger">
+                {{ error|escape }}
+              </div>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ error|escape }}
+            </div>
+          {% endfor %}
+          {% endif %}     
+
+          <form method="POST" 
+          {% if action_url %} 
+              {% if is_edit %} 
+              action="{% url 'posts:edit' post.id entry=entry %}"
+            {% else %}
+              action="{% url 'posts:create' %}"
+            {% endif %}
+          {% endif %}>
+            {% csrf_token %}   
+        {% for field in form %}
+            <div class="form-group row my-3 p-3">
+                    {{ field.label }}
+                    {{ field }}
+
+                    {% if field.field.required %}
+                      <span class="required text-danger">*</span>
+                    {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">
+                {% if is_edit %}
+                  Сохранить
+                {% else %}
+                  Опубликовать
+                {% endif %}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
