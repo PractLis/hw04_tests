@@ -1,0 +1,13 @@
+{% if post.group and not group %}
+<div>
+    <a href="{% url 'posts:group_list' post.group.slug %}" class='button'>
+        Все записи группы {{ post.group.title }}
+    </a>
+</div>
+{% endif %}
+{% if post.comments.exists %}
+    <div>
+        Комментариев: {{ post.comments.count }}
+    </div>
+{% endif %}
+

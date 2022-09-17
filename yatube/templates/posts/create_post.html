@@ -33,7 +33,7 @@
           {% endfor %}
           {% endif %}     
 
-          <form method="POST" 
+          <form method="POST" enctype="multipart/form-data"
           {% if action_url %} 
               {% if is_edit %} 
               action="{% url 'posts:edit' post.id entry=entry %}"

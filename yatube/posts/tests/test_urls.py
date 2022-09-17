@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
+from django.urls import reverse
 
 from ..models import Group, Post
 
@@ -36,19 +37,15 @@ class GroupURLTests(TestCase):
         """URL-адрес использует соответствующий шаблон."""
         # Шаблоны по адресам
         url_names = {
-            '/': 'posts/index.html',
-            '/group/test-slug/': 'posts/group_list.html',
-            '/profile/not_author/': 'posts/profile.html',
-            '/posts/1/': 'posts/post_detail.html',
+            reverse('posts:index'): 'posts/index.html',
+            reverse('posts:group_list', kwargs={'slug': 'test-slug'}): 'posts/group_list.html',
+            reverse('posts:profile', kwargs={'username': self.author.username}): 'posts/profile.html',
+            reverse('posts:post_detail', kwargs={'post_id': self.post.id}): 'posts/post_detail.html',
         }
-        for address in url_names.keys():
-            with self.subTest(address=address):
-                response = self.guest_client.get(address)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
         for address, template in url_names.items():
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
-                self.assertTemplateUsed(response, template)
+                self.assertEqual(response.status_code, HTTPStatus.OK, template)
 
     def test_create_correct_address_template(self):
         """URL-адрес создания поста использует соответствующий шаблон"""
@@ -89,3 +86,15 @@ class GroupURLTests(TestCase):
                 self.assertTemplateUsed(response, 'posts/post_detail.html')
                 response = self.authorized_auth.get(address)
                 self.assertTemplateUsed(response, template)
+
+    def test_follow_address_template(self):
+        """URL-адрес подписки поста использует соответствующий шаблон"""
+        url_names = {
+            reverse('posts:follow_index'): 'posts/follow.html',
+        }
+        for address, template in url_names.items():
+            with self.subTest(address=address):
+                response = self.authorized_auth.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK, template)
+                response = self.guest_client.get(address, follow=True)
+                self.assertEqual(response.status_code, HTTPStatus.OK, 'users/login.html') 
